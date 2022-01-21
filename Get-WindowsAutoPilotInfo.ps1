@@ -141,10 +141,10 @@ Begin
 	if ($Online) {
 
 		# Get NuGet
-		$provider = Get-PackageProvider NuGet -ErrorAction Ignore
+		$provider = Get-PackageProvider NuGet -ErrorAction Ignore -confirm:$false
 		if (-not $provider) {
 			Write-Host "Installing provider NuGet"
-			Find-PackageProvider -Name NuGet -ForceBootstrap -IncludeDependencies
+			Find-PackageProvider -Name NuGet -ForceBootstrap -IncludeDependencies -confirm:$false
 		}
 		
 		# Get WindowsAutopilotIntune module (and dependencies)
