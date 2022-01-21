@@ -110,6 +110,8 @@ Get-CMCollectionMember -CollectionName "All Systems" | .\GetWindowsAutoPilotInfo
 
 #>
 
+
+
 [CmdletBinding(DefaultParameterSetName = 'Default')]
 param(
 	[Parameter(Mandatory=$False,ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True,Position=0)][alias("DNSHostName","ComputerName","Computer")] [String[]] $Name = @("localhost"),
@@ -126,8 +128,8 @@ param(
 	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [String] $AppSecret = "",
 	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [String] $AddToGroup = "MDM - Device - AzureAD Joined",
 	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [String] $AssignedComputerName = (Read-Host -Prompt "Input Computer HOSTNAME"),
-	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [Switch] $Assign = $false, 
-	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [Switch] $Reboot = $false
+	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [Switch] $Assign = $False, 
+	[Parameter(Mandatory=$False,ParameterSetName = 'Online')] [Switch] $Reboot = $False
 )
 
 Begin
@@ -443,8 +445,17 @@ End
 			Write-Host "Profiles assigned to all devices.  Elapsed time to complete assignment: $assignSeconds seconds"	
 			if ($Reboot)
 			{
+				$t = "CommunicationsApps","OfficeHub","people","Skype","Solitaire","Xbox","Zune","Teams","Chat"
+				foreach ($i in $t)
+				{
+					Get-AppxProvisionedPackage -online | select packagename | Where-Object {$_.PackageName -match $i } | Remove-AppxProvisionedPackage -Online 
+				} 
+				Set-WindowsEdition (changepk.exe)
 				Restart-Computer -Force
 			}
+				
 		}
 	}
 }
+
+
